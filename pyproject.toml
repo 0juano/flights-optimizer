@@ -1,0 +1,26 @@
+[build-system]
+requires = ["hatchling>=1.27"]
+build-backend = "hatchling.build"
+
+[project]
+name = "flights-optimizer"
+version = "0.1.0"
+description = "A bounded search-and-score engine for sane flight options."
+readme = "README.md"
+requires-python = ">=3.11"
+license = { text = "MIT" }
+authors = [
+  { name = "Juan Otero" }
+]
+dependencies = []
+
+[project.optional-dependencies]
+dev = [
+  "pytest>=8.3.5",
+]
+
+[project.scripts]
+flights-optimizer = "flights_optimizer.cli:main"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
