@@ -12,7 +12,9 @@ license = { text = "MIT" }
 authors = [
   { name = "Juan Otero" }
 ]
-dependencies = []
+dependencies = [
+  "flights>=0.8.4",
+]
 
 [project.optional-dependencies]
 dev = [

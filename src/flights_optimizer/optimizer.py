@@ -38,10 +38,10 @@ def optimize_trip(
     ranked = sorted(
         accepted_by_id.values(),
         key=lambda item: (
-            item.effective_cost_usd,
+            item.effective_cost,
             item.option.duration_minutes,
             item.option.stops,
-            item.option.price_usd,
+            item.option.price,
         ),
     )
 
@@ -49,8 +49,8 @@ def optimize_trip(
         item
         for item in ranked
         if item.option.option_id != baseline.option.option_id
-        and item.option.price_usd < baseline.option.price_usd
-        and item.effective_cost_usd < baseline.effective_cost_usd
+        and item.option.price < baseline.option.price
+        and item.effective_cost < baseline.effective_cost
     ]
 
     easiest_reasonable = min(
@@ -61,14 +61,14 @@ def optimize_trip(
             int(item.option.self_transfer),
             int(item.option.overnight_layover),
             item.option.duration_minutes,
-            item.effective_cost_usd,
+            item.effective_cost,
         ),
     )
 
     return OptimizationResult(
         baseline=baseline,
         ranked_options=ranked,
-        rejected_options=sorted(rejected, key=lambda item: item.option.price_usd),
+        rejected_options=sorted(rejected, key=lambda item: item.option.price),
         best_value=ranked[0],
         cheapest_worth_it=cheaper_than_baseline[0] if cheaper_than_baseline else baseline,
         easiest_reasonable=easiest_reasonable,

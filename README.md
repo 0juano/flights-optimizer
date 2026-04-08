@@ -37,6 +37,7 @@ The initial public version includes:
 - a scoring system for "real" trip cost
 - rejection rules for obviously bad options
 - a shortlist builder that picks the best-value, cheapest-worth-it, and easiest reasonable routes
+- a first live one-way search flow powered by `fli`
 - tests and a runnable demo
 
 ## Planned shape
@@ -70,6 +71,7 @@ source .venv/bin/activate
 python -m pip install -e ".[dev]"
 pytest
 python -m flights_optimizer
+python -m flights_optimizer JFK LAX 2026-05-20 --flex-days 1
 ```
 
 ## Demo output
@@ -80,6 +82,23 @@ prints:
 - which routes are rejected
 - each option's adjusted cost after penalties
 - the short final shortlist
+
+For live searches, the CLI will:
+
+- get the baseline flight for the requested route and date
+- search nearby dates and any optional alternate airports you allow
+- score the returned flights in the same currency Google returns
+- print a shortlist plus the rejected options
+
+Example:
+
+```bash
+python -m flights_optimizer JFK LAX 2026-05-20 \
+  --cabin economy \
+  --flex-days 1 \
+  --alt-origin EWR \
+  --alt-destination BUR
+```
 
 ## Design principles
 

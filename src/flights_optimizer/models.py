@@ -20,25 +20,28 @@ class SearchRequest:
 class FlightOption:
     option_id: str
     label: str
-    price_usd: float
+    price: float
     duration_minutes: int
     stops: int
+    currency: str = "USD"
     layover_minutes: tuple[int, ...] = field(default_factory=tuple)
-    baggage_fees_usd: float = 0.0
-    reposition_cost_usd: float = 0.0
+    baggage_fees: float = 0.0
+    reposition_cost: float = 0.0
     airport_change_count: int = 0
     self_transfer: bool = False
     overnight_layover: bool = False
 
     def __post_init__(self) -> None:
-        if self.price_usd < 0:
-            raise ValueError("price_usd must be zero or greater")
+        if self.price < 0:
+            raise ValueError("price must be zero or greater")
         if self.duration_minutes <= 0:
             raise ValueError("duration_minutes must be greater than zero")
         if self.stops < 0:
             raise ValueError("stops must be zero or greater")
         if self.airport_change_count < 0:
             raise ValueError("airport_change_count must be zero or greater")
+        if not self.currency:
+            self.currency = "UNKNOWN"
         if len(self.layover_minutes) > self.stops:
             raise ValueError("layover_minutes cannot outnumber stops")
         if any(minutes <= 0 for minutes in self.layover_minutes):
@@ -48,9 +51,9 @@ class FlightOption:
 @dataclass(slots=True)
 class ScoreBreakdown:
     option: FlightOption
-    effective_cost_usd: float
-    price_savings_usd: float
-    hassle_penalty_usd: float
+    effective_cost: float
+    price_savings: float
+    hassle_penalty: float
     accepted: bool
     reasons: tuple[str, ...] = field(default_factory=tuple)
 
