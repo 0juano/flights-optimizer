@@ -1,6 +1,6 @@
 # flights-optimizer
 
-`flights-optimizer` is a bounded search-and-score engine for flight options.
+`flights-optimizer` is a terminal-first search and ranking tool for flight options.
 
 The goal is simple:
 
@@ -31,13 +31,14 @@ This project treats those tradeoffs as first-class inputs.
 
 ## Current scope
 
-The initial public version includes:
+The current version includes:
 
-- a small flight option model
-- a scoring system for "real" trip cost
-- rejection rules for obviously bad options
-- a shortlist builder that picks the best-value, cheapest-worth-it, and easiest reasonable routes
-- a first live one-way search flow powered by `fli`
+- a month-first search flow powered by `fli`
+- a polished `fo` terminal command
+- round-trip scanning for destination groups like Italy, Spain, and France
+- hard filters for stops, layovers, airport changes, overnights, and time versus direct
+- automatic price normalization to USD
+- saved search history, result drill-down, and comparison views
 - tests and a runnable demo
 
 ## Planned shape
@@ -58,9 +59,9 @@ flight optimizer
 
 Near-term roadmap:
 
-1. Plug in a real flight data source.
-2. Generate route/date/airport variations from a user request.
-3. Run a bounded search loop instead of a one-shot query.
+1. Expand destination presets and airport families.
+2. Add date-range and themed search templates.
+3. Improve scoring so the shortlist balances price, trip shape, and simplicity.
 4. Keep the final ranking deterministic and explainable.
 
 ## Quick start
@@ -70,42 +71,60 @@ python -m venv .venv
 source .venv/bin/activate
 python -m pip install -e ".[dev]"
 pytest
-python -m flights_optimizer
-python -m flights_optimizer JFK LAX 2026-05-20 --flex-days 1
+fo demo
+fo find --from EZE --prefer italy,spain --month 2026-07 --stay 21
 ```
 
-## Demo output
+## CLI flow
 
-The demo compares a baseline itinerary against a handful of alternatives and
-prints:
+The terminal interface is built around four commands:
 
-- which routes are rejected
-- each option's adjusted cost after penalties
-- the short final shortlist
+- `fo find`
+  Scan a month, fetch real itineraries, reject bad fits, and show the shortlist.
+- `fo show`
+  Open one saved result and see the full trip details.
+- `fo compare`
+  Put a few saved results side by side.
+- `fo history`
+  See recent searches and their winners.
 
-For live searches, the CLI will:
-
-- get the baseline flight for the requested route and date
-- search nearby dates and any optional alternate airports you allow
-- score the returned flights in the same currency Google returns
-- print a shortlist plus the rejected options
-
-Example:
+The main command looks like this:
 
 ```bash
-python -m flights_optimizer JFK LAX 2026-05-20 \
-  --cabin economy \
-  --flex-days 1 \
-  --alt-origin EWR \
-  --alt-destination BUR
+fo find \
+  --from EZE \
+  --prefer italy,spain \
+  --month 2026-07 \
+  --stay 21 \
+  --max-stops 1 \
+  --layover 60:180 \
+  --vs-direct 30
+```
+
+That produces a report with:
+
+- the trip rules at the top
+- a scan summary for each airport that was checked
+- the best few options in USD
+- a clear winner panel
+- rejected routes with the reason they failed
+- next-step commands for digging deeper
+
+Example follow-up commands:
+
+```bash
+fo show 1
+fo compare 1 2 3
+fo history
 ```
 
 ## Design principles
 
 - Bounded, not open-ended.
-- Cheap search most of the time, stronger judgment only when needed.
+- Search dates first, then inspect real itineraries.
 - Hard rules for obviously bad routes.
 - Clear explanations over "AI magic."
+- A terminal experience that reads like a decision brief, not a raw dump.
 
 ## Inspiration
 

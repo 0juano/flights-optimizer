@@ -14,6 +14,7 @@ authors = [
 ]
 dependencies = [
   "flights>=0.8.4",
+  "rich>=14.0.0",
 ]
 
 [project.optional-dependencies]
@@ -23,6 +24,7 @@ dev = [
 
 [project.scripts]
 flights-optimizer = "flights_optimizer.cli:main"
+fo = "flights_optimizer.cli:main"
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
